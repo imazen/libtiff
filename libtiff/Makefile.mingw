@@ -3,15 +3,16 @@
 
 DLL_NAME = libtiff.dll
 
-LIBS = ../../zlib/libz.a
-EXTRA_INCLS = ../../zlib
-EXTRA_LIBS = ../../zlib
+LIBS = ../../zlib/libz.a ../../libjpeg-turbo/libjpeg.a
+INCS = -I../../zlib -I../../libjpeg-turbo
 
 CODECS = \
 	-DZIP_SUPPORT \
 	-DCCITT_SUPPORT \
 	-DPACKBITS_SUPPORT\
-	-DLZW_SUPPORT
+	-DLZW_SUPPORT \
+	-DJPEG_SUPPORT \
+	-DOJPEG_SUPPORT
 
 # rare stuff
 #	-DTHUNDER_SUPPORT \
@@ -19,7 +20,8 @@ CODECS = \
 #	-DLOGLUV_SUPPORT
 
 CC = gcc
-CFLAGS = -O2 $(CODECS) -I$(EXTRA_INCLS)
+AR = ar rcs
+CFLAGS = -O2 $(CODECS) $(INCS)
 
 HDRS = \
 	tiff.h \
@@ -76,11 +78,10 @@ tiffconf.h:	tiffconf.mingw.h
 	copy /y tiffconf.mingw.h tiffconf.h
 
 $(DLL_NAME): $(OBJS)
-	gcc -shared -s -O2 -I. -I$(EXTRA_INCLS) $(CODECS) -L$(EXTRA_LIBS) -o $(DLL_NAME) $(OBJS) libtiff.def -lz
-# -ljpeg
+	$(CC) -shared -s -O2 -I. $(INCS) $(CODECS) -o $(DLL_NAME) $(OBJS) $(LIBS) libtiff.def
 
 libtiff.a: $(OBJS)
-	ar rcs $@ $(OBJS) $(LIBS)
+	$(AR) $@ $(OBJS) $(LIBS)
 
 libtiff.dll.a:
 	dlltool -d libtiff.def -D $(DLL_NAME) -l libtiff.dll.a
