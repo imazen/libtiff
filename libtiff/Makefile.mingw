@@ -9,7 +9,7 @@ EXTRA_INCLS = ../../zlib
 EXTRA_LIBS = ../../zlib
 
 CC = gcc
-CFLAGS = -DZIP_SUPPORT -I$(EXTRA_INCLS)
+CFLAGS = -O2 -DZIP_SUPPORT -I$(EXTRA_INCLS)
 
 HDRS = \
 	tiff.h \
@@ -66,7 +66,7 @@ tiffconf.h:	tiffconf.mingw.h
 	copy /y tiffconf.mingw.h tiffconf.h
 
 $(DLL_NAME): $(OBJS)
-	gcc -shared -s -O3 -Wall -I. -I$(EXTRA_INCLS) -L$(EXTRA_LIBS) -o $(DLL_NAME) $(OBJS) libtiff.def -lz
+	gcc -shared -s -O2 -I. -I$(EXTRA_INCLS) -L$(EXTRA_LIBS) -o $(DLL_NAME) $(OBJS) libtiff.def -lz
 # -ljpeg
 
 libtiff.a: $(OBJS)
