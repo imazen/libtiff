@@ -8,6 +8,7 @@ LIBS = ../../zlib/libz.a
 EXTRA_INCLS = ../../zlib
 EXTRA_LIBS = ../../zlib
 
+CC = gcc
 CFLAGS = -DZIP_SUPPORT -I$(EXTRA_INCLS)
 
 HDRS = \
