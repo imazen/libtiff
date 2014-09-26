@@ -4,8 +4,11 @@
 
 DLL_NAME = libtiff.dll
 
+LIBS = ../../zlib/libz.a
 EXTRA_INCLS = ../../zlib
 EXTRA_LIBS = ../../zlib
+
+CFLAGS = -DZIP_SUPPORT -I$(EXTRA_INCLS)
 
 HDRS = \
 	tiff.h \
@@ -66,7 +69,7 @@ $(DLL_NAME): $(OBJS)
 # -ljpeg
 
 libtiff.a: $(OBJS)
-	ar rcs $@ $(OBJS)
+	ar rcs $@ $(OBJS) $(LIBS)
 
 libtiff.dll.a:
 	dlltool -d libtiff.def -D $(DLL_NAME) -l libtiff.dll.a
