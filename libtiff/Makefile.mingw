@@ -1,5 +1,4 @@
 # Usage: mingw32-make -fMakefile.mingw
-# Zlib is on; Jpeg is off
 
 
 DLL_NAME = libtiff.dll
@@ -8,8 +7,19 @@ LIBS = ../../zlib/libz.a
 EXTRA_INCLS = ../../zlib
 EXTRA_LIBS = ../../zlib
 
+CODECS = \
+	-DZIP_SUPPORT \
+	-DCCITT_SUPPORT \
+	-DPACKBITS_SUPPORT\
+	-DLZW_SUPPORT
+
+# rare stuff
+#	-DTHUNDER_SUPPORT \
+#	-DNEXT_SUPPORT \
+#	-DLOGLUV_SUPPORT
+
 CC = gcc
-CFLAGS = -O2 -DZIP_SUPPORT -I$(EXTRA_INCLS)
+CFLAGS = -O2 $(CODECS) -I$(EXTRA_INCLS)
 
 HDRS = \
 	tiff.h \
@@ -66,7 +76,7 @@ tiffconf.h:	tiffconf.mingw.h
 	copy /y tiffconf.mingw.h tiffconf.h
 
 $(DLL_NAME): $(OBJS)
-	gcc -shared -s -O2 -I. -I$(EXTRA_INCLS) -L$(EXTRA_LIBS) -o $(DLL_NAME) $(OBJS) libtiff.def -lz
+	gcc -shared -s -O2 -I. -I$(EXTRA_INCLS) $(CODECS) -L$(EXTRA_LIBS) -o $(DLL_NAME) $(OBJS) libtiff.def -lz
 # -ljpeg
 
 libtiff.a: $(OBJS)
