@@ -3,8 +3,8 @@
 
 DLL_NAME = libtiff.dll
 
-LIBS = ../../zlib/libz.a ../../libjpeg-turbo/libjpeg.a
-INCS = -I../../zlib -I../../libjpeg-turbo
+LIBS = ../deps/libzlibstatic.a ../deps/libjpeg.a
+INCS = -I../deps -I../deps
 
 CODECS = \
 	-DZIP_SUPPORT \
