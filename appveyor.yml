@@ -32,9 +32,9 @@ install:
   
   # fetch deps
   - nuget install zlib-%build_compiler%-%build_platform% -Source https://ci.appveyor.com/nuget/zlib-94hmpf3q011d
-  - move zlib* deps
+  - ps: move zlib* deps
   - nuget install libjpeg-%build_compiler%-%build_platform% -Source https://ci.appveyor.com/nuget/libjpeg-turbo-t70qw53csfhj
-  - move libjpeg* deps
+  - ps: move libjpeg* deps
   
   # get mingw-w64 (C:\mingw64)
   - ps: if($env:build_compiler -eq 'mingw' -and $env:build_platform -eq 'x64') {
