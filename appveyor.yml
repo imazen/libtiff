@@ -57,7 +57,7 @@ build_script:
   
   - if [%build_compiler%]==[msvc] (
       nmake /f makefile.vc &&
-      7z a %zip% .\libtiff\libtiff.lib .\libtiff\libtiff.dll.a .\libtiff\libtiff.dll .\libtiff\tiff.h .\libtiff\tiffconf.h .\libtiff\tiffio.h .\libtiff\tiffvers.h &&
+      7z a %zip% .\libtiff\libtiff.lib .\libtiff\libtiff.dll .\libtiff\tiff.h .\libtiff\tiffconf.h .\libtiff\tiffio.h .\libtiff\tiffvers.h &&
       appveyor PushArtifact %zip%
     )
   
@@ -76,7 +76,7 @@ build_script:
       cd libtiff &&
       mingw32-make -fmakefile.mingw &&
       cd .. &&
-      7z a %zip% .\libtiff\libtiff.a .\libtiff\tiff.h .\libtiff\tiffconf.h .\libtiff\tiffio.h .\libtiff\tiffvers.h &&
+      7z a %zip% .\libtiff\libtiff.a .\libtiff\libtiff.dll .\libtiff\libtiff.dll.a .\libtiff\tiff.h .\libtiff\tiffconf.h .\libtiff\tiffio.h .\libtiff\tiffvers.h &&
       appveyor PushArtifact %zip%
     )
   
