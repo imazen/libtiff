@@ -77,7 +77,7 @@ build_script:
       mingw32-make -fmakefile.mingw &&
       cd .. &&
       7z a %zip% .\libtiff\libtiff.a .\libtiff\tiff.h .\libtiff\tiffconf.h .\libtiff\tiffio.h .\libtiff\tiffvers.h &&
-      appveyor PushArtifact %zip% &&
+      appveyor PushArtifact %zip%
     )
   
   - ps: if(Test-Path $env:zip) { zip2nuget $env:zip "libtiff-$($env:build_compiler)-$($env:build_platform)" }
