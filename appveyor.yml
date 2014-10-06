@@ -2,6 +2,17 @@ shallow_clone: true
 
 
 environment:
+  # settings
+  static_runtime: 1
+  
+  static_gcargs: -DCMAKE_SHARED_LINKER_FLAGS=-static
+  static_vcargs:
+  #static_vcargs: -DCMAKE_C_FLAGS_RELEASE=/MT
+  # ^ don't.
+  
+  cmake_args: -DCMAKE_LIBRARY_PATH=deps -DCMAKE_INCLUDE_PATH=deps
+  
+  
   matrix:
     - build_platform: "x86"
       build_compiler: "msvc"
@@ -20,9 +31,11 @@ environment:
 install:
   - ps: if($env:build_platform -eq 'x64') {
           $env:vcvar_arg = 'x86_amd64';
+          $env:vc_cm_arg = 'Visual Studio 12 Win64';
         }
         else {
           $env:vcvar_arg = 'x86';
+          $env:vc_cm_arg = 'Visual Studio 12';
         }
   
   
@@ -58,10 +71,21 @@ build_script:
   - '"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall" %vcvar_arg%'
   
   - SET zip=libtiff-msvc12-%build_platform%.zip
+  - SET cmake_cmd=cmake -G "%vc_cm_arg%" %cmake_args%
+  - if [%static_runtime%]==[1] SET cmake_cmd=%cmake_cmd% %static_vcargs%
   
   - if [%build_compiler%]==[msvc] (
-      nmake /f makefile.vc &&
-      7z a %zip% .\libtiff\libtiff.lib .\libtiff\libtiff_i.lib .\libtiff\libtiff.dll .\libtiff\tiff.h .\libtiff\tiffconf.h .\libtiff\tiffio.h .\libtiff\tiffvers.h &&
+      %cmake_cmd% &&
+      msbuild TIFF.sln /p:Configuration=Release /v:m &&
+      7z a %zip%
+        .\libtiff\Release\tiff_static.lib
+        .\libtiff\Release\tiff.dll
+        .\libtiff\Release\tiff.lib
+        .\libtiff\tiff.h
+        .\headers\tif_config.h
+        .\headers\tiffconf.h
+        .\libtiff\tiffio.h
+        .\libtiff\tiffvers.h &&
       appveyor PushArtifact %zip%
     )
   
@@ -75,14 +99,11 @@ build_script:
   - if [%build_compiler%]==[mingw] if [%build_platform%]==[x64] SET PATH=C:\mingw64\bin;%PATH%
   
   - SET zip=libtiff-mingw-%build_platform%.zip
+  - SET cmake_cmd=cmake -G "MinGW Makefiles" %cmake_args%
+  - if [%static_runtime%]==[1] SET cmake_cmd=%cmake_cmd% %static_gcargs%
   
   - if [%build_compiler%]==[mingw] (
-      cmake
-        -G "MinGW Makefiles"
-        -DCMAKE_SHARED_LINKER_FLAGS=-static
-        -DCMAKE_LIBRARY_PATH=deps
-        -DCMAKE_INCLUDE_PATH=deps
-        . &&
+      %cmake_cmd% &&
       mingw32-make &&
       7z a %zip%
         .\libtiff\libtiff.a
