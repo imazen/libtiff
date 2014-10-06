@@ -319,9 +319,9 @@ endfunction()
 tiff_feature(ccitt "Support CCITT Group 3 & 4 algorithms" ON)
 tiff_feature(packbits "Support Macintosh PackBits algorithm." ON)
 tiff_feature(lzw "Support LZW algorithm." ON)
-tiff_feature(thunder "Support ThunderScan 4-bit RLE algorithm." ON)
-tiff_feature(next "Support NeXT 2-bit RLE algorithm." ON)
-tiff_feature(logluv "Support LogLuv high dynamic range encoding." ON)
+tiff_feature(thunder "Support ThunderScan 4-bit RLE algorithm." OFF)
+tiff_feature(next "Support NeXT 2-bit RLE algorithm." OFF)
+tiff_feature(logluv "Support LogLuv high dynamic range encoding." OFF)
 
 # ---------------------------------------------------------------------------
 # Switch on/off support for Microsoft Document Imaging
