@@ -52,7 +52,11 @@ install:
   
   # make lib names cmake friendly
   - del deps\*.dll*
-  - if [%build_compiler%]==[mingw] copy /y deps\libzlibstatic.a deps\libz.a
+  - if [%build_compiler%]==[msvc] (
+      copy /y deps\zlibstatic.lib deps\zlib.lib &&
+      copy /y deps\jpeg-static.lib deps\jpeg.lib )
+  - if [%build_compiler%]==[mingw]
+      copy /y deps\libzlibstatic.a deps\libz.a
   
   # get mingw-w64 (C:\mingw64)
   - ps: if($env:build_compiler -eq 'mingw' -and $env:build_platform -eq 'x64') {
