@@ -73,9 +73,22 @@ build_script:
   - SET zip=libtiff-mingw-%build_platform%.zip
   
   - if [%build_compiler%]==[mingw] (
-      cmake -G "MinGW Makefiles" -DCMAKE_SHARED_LINKER_FLAGS=-static -DCMAKE_LIBRARY_PATH=deps -DCMAKE_INCLUDE_PATH=deps . &&
+      cmake
+        -G "MinGW Makefiles"
+        -DCMAKE_SHARED_LINKER_FLAGS=-static
+        -DCMAKE_LIBRARY_PATH=deps
+        -DCMAKE_INCLUDE_PATH=deps
+        . &&
       mingw32-make &&
-      7z a %zip% .\libtiff\libtiff.a .\libtiff\libtiff.dll .\libtiff\libtiff.dll.a .\libtiff\tiff.h .\libtiff\tiffconf.h .\libtiff\tiffio.h .\libtiff\tiffvers.h &&
+      7z a %zip%
+        .\libtiff\libtiff.a
+        .\libtiff\libtiff.dll
+        .\libtiff\libtiff.dll.a
+        .\libtiff\tiff.h
+        .\headers\tif_config.h
+        .\headers\tiffconf.h
+        .\libtiff\tiffio.h
+        .\libtiff\tiffvers.h &&
       appveyor PushArtifact %zip%
     )
   
