@@ -73,9 +73,8 @@ build_script:
   - SET zip=libtiff-mingw-%build_platform%.zip
   
   - if [%build_compiler%]==[mingw] (
-      cd libtiff &&
-      mingw32-make -fmakefile.mingw &&
-      cd .. &&
+      cmake -G "MinGW Makefiles" -DCMAKE_SHARED_LINKER_FLAGS=-static -DCMAKE_LIBRARY_PATH=deps -DCMAKE_INCLUDE_PATH=deps . &&
+      mingw32-make &&
       7z a %zip% .\libtiff\libtiff.a .\libtiff\libtiff.dll .\libtiff\libtiff.dll.a .\libtiff\tiff.h .\libtiff\tiffconf.h .\libtiff\tiffio.h .\libtiff\tiffvers.h &&
       appveyor PushArtifact %zip%
     )
@@ -85,11 +84,11 @@ build_script:
 
 
 test_script:
-  #- SET fail=0
-  #- ctest -C Release || SET fail=1 & ver > nul
-  #- ps: Push-Ctest-Results '.'
-  #- ps: Push-AppveyorArtifact Testing\Temporary\LastTest.log
-  #- exit %fail%
+  - SET fail=0
+  - ctest -C Release || SET fail=1 & ver > nul
+  - ps: Push-Ctest-Results '.'
+  - ps: Push-AppveyorArtifact Testing\Temporary\LastTest.log
+  - exit %fail%
 
 on_success:
   - ps: Push-AppveyorArtifact *.nupkg
