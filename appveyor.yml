@@ -45,9 +45,9 @@ install:
   
   # fetch deps
   - mkdir deps
-  - nuget install zlib-%build_compiler%-%build_platform% -Source https://ci.appveyor.com/nuget/zlib-94hmpf3q011d
+  - nuget install zlib-%build_compiler%-%build_platform%-master -Source https://ci.appveyor.com/nuget/zlib-94hmpf3q011d
   - ps: move zlib*\* deps -force
-  - nuget install libjpeg-%build_compiler%-%build_platform% -Source https://ci.appveyor.com/nuget/libjpeg-turbo-t70qw53csfhj
+  - nuget install libjpeg-%build_compiler%-%build_platform%-master -Source https://ci.appveyor.com/nuget/libjpeg-turbo-t70qw53csfhj
   - ps: move libjpeg*\* deps -force
   
   # make lib names cmake friendly
@@ -65,6 +65,9 @@ install:
 
 
 build_script:
+    
+  - ps: $nupkg_b = "zlib-$($env:build_compiler)-$($env:build_platform)-$($env:APPVEYOR_REPO_BRANCH)";
+  - ps: $nupkg_c = "zlib-$($env:build_compiler)-$($env:build_platform)-$($env:APPVEYOR_REPO_COMMIT)";
   
   # build msvc
   
@@ -89,8 +92,9 @@ build_script:
       appveyor PushArtifact %zip%
     )
   
-  - ps: if(Test-Path $env:zip) { zip2nuget $env:zip "libtiff-$($env:build_compiler)-$($env:build_platform)" }
-  
+  - ps: if(Test-Path $env:zip) {
+          zip2nuget $env:zip $nupkg_b;
+          zip2nuget $env:zip $nupkg_c; }
   
   
   # build mingw
@@ -117,8 +121,9 @@ build_script:
       appveyor PushArtifact %zip%
     )
   
-  - ps: if(Test-Path $env:zip) { zip2nuget $env:zip "libtiff-$($env:build_compiler)-$($env:build_platform)" }
-
+  - ps: if(Test-Path $env:zip) {
+          zip2nuget $env:zip $nupkg_b;
+          zip2nuget $env:zip $nupkg_c; }
 
 
 test_script:
@@ -129,4 +134,5 @@ test_script:
   - exit %fail%
 
 on_success:
-  - ps: Push-AppveyorArtifact *.nupkg
+  - ps: Push-AppveyorArtifact "$nupkg_b*.nupkg"
+  - ps: Push-AppveyorArtifact "$nupkg_c*.nupkg"
