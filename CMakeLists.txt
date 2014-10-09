@@ -9,6 +9,7 @@ include("AutoconfHelper")
 include("FeatureSummary")
 include("CMakePushCheckState")
 include("CMakeDependentOption")
+include("CheckLibraryExists")
 
 project(TIFF)
 
