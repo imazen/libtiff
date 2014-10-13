@@ -10,3 +10,7 @@ Current master:
 Last build:
 
 [![Build status](https://ci.appveyor.com/api/projects/status/g7wokqk79q51sk0r)](https://ci.appveyor.com/project/nathanaeljones/libtiff)
+
+### Drone.io Build
+
+[![Build Status](https://drone.io/github.com/imazen/libtiff/status.png)](https://drone.io/github.com/imazen/libtiff/latest)
