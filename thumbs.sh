@@ -240,6 +240,7 @@ make)
   cd build
   
   cm_args+=(-DCMAKE_C_FLAGS_$(upper $tbs_conf)="$c_flags")
+  cm_args+=(-DCMAKE_CXX_FLAGS_$(upper $tbs_conf)="$c_flags")
   cmake -G "$cm_tools" "${cm_args[@]}" .. || exit 1
   $make || exit 1
   

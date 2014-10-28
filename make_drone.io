@@ -12,6 +12,7 @@ tar -zcf out/libtiff-x64.tar.gz --transform 's/.*\///' $(./thumbs.sh list)
 
 sudo apt-get -y update > /dev/null
 sudo apt-get -y install gcc-multilib > /dev/null
+sudo apt-get -y install g++-multilib > /dev/null
 
 export tbs_arch=x86
 ./thumbs.sh make
