@@ -3,40 +3,31 @@ shallow_clone: true
 
 
 environment:
-  # settings
-  static_runtime: 1
-  
-  static_gcargs: -DCMAKE_SHARED_LINKER_FLAGS=-static
-  static_vcargs:
-  #static_vcargs: -DCMAKE_C_FLAGS_RELEASE=/MT
-  # ^ don't.
-  
-  cmake_args: -DCMAKE_LIBRARY_PATH=deps -DCMAKE_INCLUDE_PATH=deps
-  
-  
   matrix:
-    - build_platform: "x86"
-      build_compiler: "msvc"
+    - tbs_arch: "x86"
+      tbs_tools: "msvc12"
+      tbs_static_runtime: 0
     
-    - build_platform: "x64"
-      build_compiler: "msvc"
+    - tbs_arch: "x64"
+      tbs_tools: "msvc12"
+      tbs_static_runtime: 0
     
-    - build_platform: "x86"
-      build_compiler: "mingw"
+    - tbs_arch: "x86"
+      tbs_tools: "mingw"
+      tbs_static_runtime: 1
     
-    - build_platform: "x64"
-      build_compiler: "mingw"
+    - tbs_arch: "x64"
+      tbs_tools: "mingw"
+      tbs_static_runtime: 1
 
 
 
 install:
   - ps: if($env:build_platform -eq 'x64') {
           $env:vcvar_arg = 'x86_amd64';
-          $env:vc_cm_arg = 'Visual Studio 12 Win64';
         }
         else {
           $env:vcvar_arg = 'x86';
-          $env:vc_cm_arg = 'Visual Studio 12';
         }
   
   
@@ -45,93 +36,54 @@ install:
   - ps: . .\gd-appveyor-helpers\appveyor_funcs.ps1
   
   # fetch deps
-  - mkdir deps
-  - nuget install zlib-%build_compiler%-%build_platform%-master -Source https://ci.appveyor.com/nuget/zlib-94hmpf3q011d
-  - ps: move zlib*\* deps -force
-  - nuget install libjpeg-%build_compiler%-%build_platform%-master -Source https://ci.appveyor.com/nuget/libjpeg-turbo-t70qw53csfhj
-  - ps: move libjpeg*\* deps -force
-  
+  #- mkdir deps
+  #- nuget install zlib-%build_compiler%-%build_platform%-master -Source https://ci.appveyor.com/nuget/zlib-94hmpf3q011d
+  #- ps: move zlib*\* deps -force
+  #- nuget install libjpeg-%build_compiler%-%build_platform%-master -Source https://ci.appveyor.com/nuget/libjpeg-turbo-t70qw53csfhj
+  #- ps: move libjpeg*\* deps -force
   # make lib names cmake friendly
-  - del deps\*.dll*
-  - ps: ls deps\*_static.lib | % {move $_ ($_ -replace '_static', '') -force}
+  #- del deps\*.dll*
+  #- ps: ls deps\*_static.lib | % {move $_ ($_ -replace '_static', '') -force}
   
   # get mingw-w64 (C:\mingw64)
-  - ps: if($env:build_compiler -eq 'mingw' -and $env:build_platform -eq 'x64') {
-      invoke 'curl' '-L -o mw64.7z "http://libgd.blob.core.windows.net/mingw/x86_64-4.9.1-release-posix-seh-rt_v3-rev1.7z"';
-      invoke '7z' 'x -oC:\ mw64.7z'; }
-  
-  # sh is breaking mingw builds; remove
-  - for %%i in (sh.exe) do @del "%%~$PATH:i"
+  - ps: if($env:tbs_tools -eq 'mingw' -and $env:tbs_arch -eq 'x64')
+        {
+          curl -outfile mw64.7z "http://libgd.blob.core.windows.net/mingw/x86_64-4.9.1-release-posix-seh-rt_v3-rev1.7z";
+          if((Get-FileHash mw64.7z -Algorithm SHA1).Hash -ne "91A35AE296C1A71802AB0C7228EE57F9AAC5D7C7")
+          {
+            echo "Invalid file hash";
+            exit 1;
+          };
+          7z x -oC:\ mw64.7z | out-null;
+        }
 
 
 
 build_script:
-    
-  - ps: $nupkg_b = "libtiff-$($env:build_compiler)-$($env:build_platform)-$($env:APPVEYOR_REPO_BRANCH)";
-  - ps: $nupkg_c = "libtiff-$($env:build_compiler)-$($env:build_platform)-$($env:APPVEYOR_REPO_COMMIT)";
-  
-  # build msvc
-  
   - '"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall" %vcvar_arg%'
+  - if [%tbs_tools%]==[mingw] if [%tbs_arch%]==[x86] SET PATH=C:\MinGW\bin;%PATH%
+  - if [%tbs_tools%]==[mingw] if [%tbs_arch%]==[x64] SET PATH=C:\mingw64\bin;%PATH%
   
-  - SET zip=libtiff-msvc12-%build_platform%.zip
-  - SET cmake_cmd=cmake -G "%vc_cm_arg%" %cmake_args%
-  - if [%static_runtime%]==[1] SET cmake_cmd=%cmake_cmd% %static_vcargs%
+  - SET zip=libtiff-%tbs_tools%-%tbs_arch%.zip
+  - ps: $nupkg_b = "libtiff-$($env:tbs_tools)-$($env:tbs_arch)-$($env:APPVEYOR_REPO_BRANCH)";
+  - ps: $nupkg_c = "libtiff-$($env:tbs_tools)-$($env:tbs_arch)-$($env:APPVEYOR_REPO_COMMIT)";
   
-  - if [%build_compiler%]==[msvc] (
-      %cmake_cmd% &&
-      msbuild TIFF.sln /p:Configuration=Release /v:m &&
-      7z a %zip%
-        .\libtiff\Release\tiff_static.lib
-        .\libtiff\Release\tiff.dll
-        .\libtiff\Release\tiff.lib
-        .\libtiff\tiff.h
-        .\headers\tif_config.h
-        .\headers\tiffconf.h
-        .\libtiff\tiffio.h
-        .\libtiff\tiffvers.h &&
-      appveyor PushArtifact %zip%
-    )
+  - thumbs make
+  - for /f "tokens=*" %%i in ('thumbs list') do set files=%%i
+  - 7z a %zip% %files%
+  - appveyor PushArtifact %zip%
   
   - ps: if(Test-Path $env:zip) {
           zip2nuget $env:zip $nupkg_b;
           zip2nuget $env:zip $nupkg_c; }
-  
-  
-  # build mingw
-  
-  - if [%build_compiler%]==[mingw] if [%build_platform%]==[x86] SET PATH=C:\MinGW\bin;%PATH%
-  - if [%build_compiler%]==[mingw] if [%build_platform%]==[x64] SET PATH=C:\mingw64\bin;%PATH%
-  
-  - SET zip=libtiff-mingw-%build_platform%.zip
-  - SET cmake_cmd=cmake -G "MinGW Makefiles" %cmake_args%
-  - if [%static_runtime%]==[1] SET cmake_cmd=%cmake_cmd% %static_gcargs%
-  
-  - if [%build_compiler%]==[mingw] (
-      %cmake_cmd% &&
-      mingw32-make &&
-      7z a %zip%
-        .\libtiff\libtiff.a
-        .\libtiff\libtiff.dll
-        .\libtiff\libtiff.dll.a
-        .\libtiff\tiff.h
-        .\headers\tif_config.h
-        .\headers\tiffconf.h
-        .\libtiff\tiffio.h
-        .\libtiff\tiffvers.h &&
-      appveyor PushArtifact %zip%
-    )
-  
-  - ps: if(Test-Path $env:zip) {
-          zip2nuget $env:zip $nupkg_b;
-          zip2nuget $env:zip $nupkg_c; }
+
 
 
 test_script:
   - SET fail=0
-  - ctest -C Release || SET fail=1 & ver > nul
-  - ps: Push-Ctest-Results '.'
-  - ps: Push-AppveyorArtifact Testing\Temporary\LastTest.log
+  - thumbs check || SET fail=1 & ver > nul
+  - ps: Push-Ctest-Results 'build'
+  - ps: Push-AppveyorArtifact build\Testing\Temporary\LastTest.log
   - exit %fail%
 
 on_success:
