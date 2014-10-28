@@ -1,6 +1,7 @@
 #!/bin/bash
 
 mkdir out
+sudo apt-get install nasm
 
 ./thumbs.sh make
 ./thumbs.sh check
