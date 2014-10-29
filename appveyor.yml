@@ -35,22 +35,27 @@ install:
   - git clone https://github.com/imazen/gd-appveyor-helpers
   - ps: . .\gd-appveyor-helpers\appveyor_funcs.ps1
   
-  # get nasm
-  #- cinst nasm
-  #nasm's main site down...
-  - curl -L -o nasminst.exe http://libgd.blob.core.windows.net/nasm/nasm-2.07-installer.exe
-  - start /wait nasminst.exe /S
-  - ps: $env:path="C:\Program Files (x86)\nasm;$($env:path)"
   
   # fetch deps
-  #- mkdir deps
-  #- nuget install zlib-%build_compiler%-%build_platform%-master -Source https://ci.appveyor.com/nuget/zlib-94hmpf3q011d
-  #- ps: move zlib*\* deps -force
-  #- nuget install libjpeg-%build_compiler%-%build_platform%-master -Source https://ci.appveyor.com/nuget/libjpeg-turbo-t70qw53csfhj
-  #- ps: move libjpeg*\* deps -force
-  # make lib names cmake friendly
-  #- del deps\*.dll*
-  #- ps: ls deps\*_static.lib | % {move $_ ($_ -replace '_static', '') -force}
+  
+  - mkdir deps
+  
+  - nuget install zlib-%tbs_tools%-%tbs_arch%-master -Source https://ci.appveyor.com/nuget/zlib-94hmpf3q011d
+  - ps: move zlib*\* deps -force
+  - if [%tbs_tools%]==[mingw] move deps\libzlibstatic.a deps\libz.a
+  - if [%tbs_tools%]==[msvc12] move deps\zlibstatic.lib deps\zlib.lib
+  - SET tbsd_zlib_built=1
+  - SET tbsd_zlib_incdir=deps
+  - SET tbsd_zlib_libdir=deps
+  
+  - nuget install libjpeg-%tbs_tools%-%tbs_arch%-master -Source https://ci.appveyor.com/nuget/libjpeg-turbo-t70qw53csfhj
+  - ps: move libjpeg*\* deps -force
+  - if [%tbs_tools%]==[mingw] del deps\libjpeg.dll.a
+  - if [%tbs_tools%]==[msvc12] move deps\jpeg_static.lib deps\jpeg.lib
+  - SET tbsd_libjpeg_turbo_built=1
+  - SET tbsd_libjpeg_turbo_incdir=deps
+  - SET tbsd_libjpeg_turbo_libdir=deps
+  
   
   # get mingw-w64 (C:\mingw64)
   - ps: if($env:tbs_tools -eq 'mingw' -and $env:tbs_arch -eq 'x64')
