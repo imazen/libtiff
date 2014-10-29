@@ -187,14 +187,14 @@ msvc12)
 gnu)
   cm_tools="Unix Makefiles"
   c_flags+=" -fPIC"
-  make=make
+  make="make $target"
   l_slib="./build/libtiff/libtiff.a"
   l_dlib="./build/libtiff/libtiff.so.4.0.3"
   l_bin="$l_dlib"
   list="$l_slib $l_dlib $l_inc" ;;
 mingw)
   cm_tools="MinGW Makefiles"
-  make=mingw32-make
+  make="mingw32-make $target"
   
   # allow sh in path; some old cmake/mingw bug?
   cm_args+=(-DCMAKE_SH=)
