@@ -54,8 +54,8 @@ deps=()
 targ=()
 post=()
 
-[ $tbsd_zlib_repo ]          || export tbsd_zlib_repo="https://github.com/imazen/zlib"
-[ $tbsd_libjpeg_turbo_repo ] || export tbsd_libjpeg_turbo_repo="https://github.com/imazen/libjpeg-turbo libjpeg_turbo"
+[ "$tbsd_zlib_repo" ]          || export tbsd_zlib_repo="https://github.com/imazen/zlib"
+[ "$tbsd_libjpeg_turbo_repo" ] || export tbsd_libjpeg_turbo_repo="https://github.com/imazen/libjpeg-turbo libjpeg_turbo"
 
 deps+=(zlib); targ+=(zlibstatic)
 post+=("cp -u \$(./thumbs.sh list_slib) ../../deps/$zname")
