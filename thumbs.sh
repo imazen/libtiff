@@ -226,7 +226,8 @@ esac
 if [ $tbs_static_runtime -gt 0 ]
 then
   [ $tbs_tools = msvc12 ] && c_flags+=" /MT"
-  [ $tbs_tools = gnu -o $tbs_tools = mingw ] && cm_args+=(-DCMAKE_SHARED_LINKER_FLAGS=-static-libgcc)
+  [ $tbs_tools = gnu ] && cm_args+=(-DCMAKE_SHARED_LINKER_FLAGS="-static-libgcc -static-libstdc++")
+  [ $tbs_tools = mingw ] && cm_args+=(-DCMAKE_SHARED_LINKER_FLAGS="-static")
 fi
 
 # -----------
