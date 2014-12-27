@@ -57,11 +57,15 @@ post=()
 [ "$tbsd_zlib_repo" ]          || export tbsd_zlib_repo="https://github.com/imazen/zlib"
 [ "$tbsd_libjpeg_turbo_repo" ] || export tbsd_libjpeg_turbo_repo="https://github.com/imazen/libjpeg-turbo libjpeg_turbo"
 
+if [[ "$OSTYPE" == "darwin"* ]]; then cp="rsync"
+else cp="cp"
+fi
+
 deps+=(zlib); targ+=(zlibstatic)
-post+=("cp -u \$(./thumbs.sh list_slib) ../../deps/$zname")
+post+=("$cp -u \$(./thumbs.sh list_slib) ../../deps/$zname")
 
 deps+=(libjpeg_turbo); targ+=(jpeg_static)
-post+=("for lib in \$(./thumbs.sh list_slib); do [ -f \$lib ] && cp -u \$lib ../../deps/$jname; done")
+post+=("for lib in \$(./thumbs.sh list_slib); do [ -f \$lib ] && $cp -u \$lib ../../deps/$jname; done")
 
 # -----------
 # dep processor
@@ -89,7 +93,7 @@ process_deps()
       ./thumbs.sh make ${targ[$key]} || exit 1
       
       # copy any includes and do poststep
-      cp -u $(./thumbs.sh list_inc) ../../deps
+      $cp -u $(./thumbs.sh list_inc) ../../deps
       eval ${post[$key]}
       
       # look in both local and parent dep dirs
