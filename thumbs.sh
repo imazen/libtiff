@@ -54,8 +54,8 @@ deps=()
 targ=()
 post=()
 
-[ "$tbsd_zlib_repo" ]          || export tbsd_zlib_repo="https://github.com/imazen/zlib"
-[ "$tbsd_libjpeg_turbo_repo" ] || export tbsd_libjpeg_turbo_repo="https://github.com/imazen/libjpeg-turbo libjpeg_turbo"
+[ "$tbsd_zlib_repo" ]          || export tbsd_zlib_repo="git clone https://github.com/imazen/zlib_shallow && cd zlib_shallow && git reset --hard b041a7f485778d7f5a49ecb48b591325caa9ae81"
+[ "$tbsd_libjpeg_turbo_repo" ] || export tbsd_libjpeg_turbo_repo="git clone https://github.com/imazen/libjpeg-turbo libjpeg_turbo && cd libjpeg_turbo && git reset --hard 48903948aba941ca00e23457d8569727d78cd1f7"
 
 if [[ "$OSTYPE" == "darwin"* ]]; then cp="rsync"
 else cp="cp"
@@ -88,8 +88,7 @@ process_deps()
     
     if [ ${!i_dep_built} -eq 0 ]
     then
-      git clone ${!i_dep_repo} --depth 1
-      cd $dep || exit 1
+      eval ${!i_dep_repo} || exit 1
       ./thumbs.sh make ${targ[$key]} || exit 1
       
       # copy any includes and do poststep
