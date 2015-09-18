@@ -14,8 +14,7 @@ before_install:
   - sudo apt-get -y install nasm cmake
   - if [ "$tbs_arch" = "x86" ];
     then
-      sudo apt-get -y install gcc-multilib;
-      sudo apt-get -y install g++-multilib;
+      sudo apt-get -y install gcc-multilib g++multilib libgd2-xpm ia32-libs ia32-libs-multiarch;
     fi
 
 script:
