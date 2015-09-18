@@ -233,6 +233,9 @@ then
   [ $tbs_tools = mingw ] && cm_args+=(-DCMAKE_SHARED_LINKER_FLAGS="-static")
 fi
 
+[ $tbs_tools = gnu ] && cm_args+=(-DCMAKE_SHARED_LINKER_FLAGS="-lc -lm")
+
+
 # -----------
 
 case "$1" in
