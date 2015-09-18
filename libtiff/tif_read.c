@@ -458,7 +458,7 @@ TIFFReadRawStrip(TIFF* tif, uint32 strip, void* buf, tmsize_t size)
 		return ((tmsize_t)(-1));
 	}
 	bytecount = td->td_stripbytecount[strip];
-	if (bytecount <= 0) {
+	if ((int64)bytecount <= 0) {
 #if defined(__WIN32__) && (defined(_MSC_VER) || defined(__MINGW32__))
 		TIFFErrorExt(tif->tif_clientdata, module,
 			     "%I64u: Invalid strip byte count, strip %lu",
@@ -498,7 +498,7 @@ TIFFFillStrip(TIFF* tif, uint32 strip)
 	if ((tif->tif_flags&TIFF_NOREADRAW)==0)
 	{
 		uint64 bytecount = td->td_stripbytecount[strip];
-		if (bytecount <= 0) {
+		if ((int64)bytecount <= 0) {
 #if defined(__WIN32__) && (defined(_MSC_VER) || defined(__MINGW32__))
 			TIFFErrorExt(tif->tif_clientdata, module,
 				"Invalid strip byte count %I64u, strip %lu",
@@ -801,7 +801,7 @@ TIFFFillTile(TIFF* tif, uint32 tile)
 	if ((tif->tif_flags&TIFF_NOREADRAW)==0)
 	{
 		uint64 bytecount = td->td_stripbytecount[tile];
-		if (bytecount <= 0) {
+		if ((int64)bytecount <= 0) {
 #if defined(__WIN32__) && (defined(_MSC_VER) || defined(__MINGW32__))
 			TIFFErrorExt(tif->tif_clientdata, module,
 				"%I64u: Invalid tile byte count, tile %lu",
@@ -930,8 +930,11 @@ TIFFReadBufferSetup(TIFF* tif, void* bp, tmsize_t size)
 		tif->tif_flags &= ~TIFF_MYBUFFER;
 	} else {
 		tif->tif_rawdatasize = (tmsize_t)TIFFroundup_64((uint64)size, 1024);
-		if (tif->tif_rawdatasize==0)
-			tif->tif_rawdatasize=(tmsize_t)(-1);
+		if (tif->tif_rawdatasize==0) {
+		    TIFFErrorExt(tif->tif_clientdata, module,
+				 "Invalid buffer size");
+		    return (0);
+		}
 		tif->tif_rawdata = (uint8*) _TIFFmalloc(tif->tif_rawdatasize);
 		tif->tif_flags |= TIFF_MYBUFFER;
 	}
@@ -987,10 +990,12 @@ TIFFStartStrip(TIFF* tif, uint32 strip)
 static int
 TIFFStartTile(TIFF* tif, uint32 tile)
 {
+        static const char module[] = "TIFFStartTile";
 	TIFFDirectory *td = &tif->tif_dir;
+        uint32 howmany32;
 
-    if (!_TIFFFillStriles( tif ) || !tif->tif_dir.td_stripbytecount)
-        return 0;
+        if (!_TIFFFillStriles( tif ) || !tif->tif_dir.td_stripbytecount)
+                return 0;
 
 	if ((tif->tif_flags & TIFF_CODERSETUP) == 0) {
 		if (!(*tif->tif_setupdecode)(tif))
@@ -998,12 +1003,18 @@ TIFFStartTile(TIFF* tif, uint32 tile)
 		tif->tif_flags |= TIFF_CODERSETUP;
 	}
 	tif->tif_curtile = tile;
-	tif->tif_row =
-	    (tile % TIFFhowmany_32(td->td_imagewidth, td->td_tilewidth)) *
-		td->td_tilelength;
-	tif->tif_col =
-	    (tile % TIFFhowmany_32(td->td_imagelength, td->td_tilelength)) *
-		td->td_tilewidth;
+        howmany32=TIFFhowmany_32(td->td_imagewidth, td->td_tilewidth);
+        if (howmany32 == 0) {
+                 TIFFErrorExt(tif->tif_clientdata,module,"Zero tiles");
+                return 0;
+        }
+	tif->tif_row = (tile % howmany32) * td->td_tilelength;
+        howmany32=TIFFhowmany_32(td->td_imagelength, td->td_tilelength);
+        if (howmany32 == 0) {
+                TIFFErrorExt(tif->tif_clientdata,module,"Zero tiles");
+                return 0;
+        }
+	tif->tif_col = (tile % howmany32) * td->td_tilewidth;
         tif->tif_flags &= ~TIFF_BUF4WRITE;
 	if (tif->tif_flags&TIFF_NOREADRAW)
 	{

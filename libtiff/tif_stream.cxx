@@ -340,12 +340,16 @@ _tiffisCloseProc(thandle_t fd)
 static int
 _tiffDummyMapProc(thandle_t , void** base, toff_t* size )
 {
+	(void) base;
+	(void) size;
 	return (0);
 }
 
 static void
 _tiffDummyUnmapProc(thandle_t , void* base, toff_t size )
 {
+	(void) base;
+	(void) size;
 }
 
 /*
@@ -417,9 +421,10 @@ TIFFStreamOpen(const char* name, istream *is)
 
 /* vim: set ts=8 sts=8 sw=8 noet: */
 /*
-  Local Variables:
-  mode: c
-  indent-tabs-mode: true
-  c-basic-offset: 8
-  End:
-*/
+ * Local Variables:
+ * mode: c
+ * c-basic-offset: 8
+ * fill-column: 78
+ * End:
+ */
+

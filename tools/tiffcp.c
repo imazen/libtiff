@@ -168,8 +168,10 @@ main(int argc, char* argv[])
 	char mode[10];
 	char* mp = mode;
 	int c;
+#if !HAVE_DECL_OPTARG
 	extern int optind;
 	extern char* optarg;
+#endif
 
 	*mp++ = 'w';
 	*mp = '\0';
@@ -633,6 +635,12 @@ tiffcp(TIFF* in, TIFF* out)
 		TIFFSetField(out, TIFFTAG_PHOTOMETRIC,
 		    samplesperpixel == 1 ?
 		    PHOTOMETRIC_LOGL : PHOTOMETRIC_LOGLUV);
+	else if (input_compression == COMPRESSION_JPEG &&
+			 samplesperpixel == 3 ) {
+		/* RGB conversion was forced above
+		hence the output will be of the same type */
+		TIFFSetField(out, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_RGB);
+	}
 	else
 		CopyTag(TIFFTAG_PHOTOMETRIC, 1, TIFF_SHORT);
 	if (fillorder != 0)
@@ -1064,7 +1072,7 @@ DECLAREcpFunc(cpContig2SeparateByRow)
 	inbuf = _TIFFmalloc(scanlinesizein);
 	outbuf = _TIFFmalloc(scanlinesizeout);
 	if (!inbuf || !outbuf)
-		return 0;
+		goto bad;
 	_TIFFmemset(inbuf, 0, scanlinesizein);
 	_TIFFmemset(outbuf, 0, scanlinesizeout);
 	/* unpack channels */
@@ -1117,7 +1125,7 @@ DECLAREcpFunc(cpSeparate2ContigByRow)
 	inbuf = _TIFFmalloc(scanlinesizein);
 	outbuf = _TIFFmalloc(scanlinesizeout);
 	if (!inbuf || !outbuf)
-		return 0;
+                goto bad;
 	_TIFFmemset(inbuf, 0, scanlinesizein);
 	_TIFFmemset(outbuf, 0, scanlinesizeout);
 	for (row = 0; row < imagelength; row++) {

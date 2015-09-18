@@ -127,8 +127,10 @@ main(int argc, char* argv[])
 	unsigned char *inbuf, *outbuf;
 	char thing[1024];
 	int c;
+#if !HAVE_DECL_OPTARG
 	extern int optind;
 	extern char *optarg;
+#endif
 
 	while ((c = getopt(argc, argv, "c:r:R:G:B:")) != -1)
 		switch (c) {
@@ -168,6 +170,11 @@ main(int argc, char* argv[])
 	TIFFGetField(in, TIFFTAG_SAMPLESPERPIXEL, &samplesperpixel);
 	if (samplesperpixel != 1 && samplesperpixel != 3) {
 		fprintf(stderr, "%s: Bad samples/pixel %u.\n",
+		    argv[optind], samplesperpixel);
+		return (-1);
+	}
+	if( photometric == PHOTOMETRIC_RGB && samplesperpixel != 3) {
+		fprintf(stderr, "%s: Bad samples/pixel %u for PHOTOMETRIC_RGB.\n",
 		    argv[optind], samplesperpixel);
 		return (-1);
 	}
