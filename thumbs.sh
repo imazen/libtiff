@@ -251,6 +251,7 @@ make)
   
   cm_args+=(-DCMAKE_C_FLAGS$fsx="$c_flags")
   cm_args+=(-DCMAKE_CXX_FLAGS$fsx="$c_flags")
+  echo "$cm_tools" "${cm_args[@]}"
   cmake -G "$cm_tools" "${cm_args[@]}" .. || exit 1
   $make || exit 1
   
