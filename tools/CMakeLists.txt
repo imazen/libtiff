@@ -31,7 +31,6 @@ include_directories(${PROJECT_SOURCE_DIR}/libtiff
 
 add_executable(bmp2tiff bmp2tiff.c)
 target_link_libraries(bmp2tiff tiff port)
-set_target_properties(bmp2tiff PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
 
 add_executable(fax2ps fax2ps.c)
 target_link_libraries(fax2ps tiff port)
