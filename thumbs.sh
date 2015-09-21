@@ -72,9 +72,9 @@ post+=("for lib in \$(./thumbs.sh list_slib); do [ -f \$lib ] && $cp -u \$lib ..
 
 process_deps()
 {
-  mkdir build_deps
+  mkdir _build_deps
   mkdir deps
-  cd build_deps
+  cd _build_deps
 
   for key in "${!deps[@]}"
   do
@@ -158,7 +158,7 @@ upper()
 
 # Local settings
 
-l_inc="./build/headers/tif_config.h ./build/headers/tiffconf.h ./libtiff/tiffio.h ./libtiff/tiffvers.h ./libtiff/tiff.h ./libtiff/tiffiop.h ./libtiff/tif_dir.h"
+l_inc="./_build/headers/tif_config.h ./_build/headers/tiffconf.h ./libtiff/tiffio.h ./libtiff/tiffvers.h ./libtiff/tiff.h ./libtiff/tiffiop.h ./libtiff/tif_dir.h"
 l_slib=
 l_dlib=
 l_bin=
@@ -183,16 +183,16 @@ msvc12)
   cm_tools="Visual Studio 12"
   [ "$target" = "" ] && mstrg="TIFF.sln" || mstrg="$target.vcxproj"
   make="msbuild.exe $mstrg //p:Configuration=$tbs_conf //v:m"
-  l_slib="./build/libtiff/$tbs_conf/tiff_static$csx.lib"
-  l_dlib="./build/libtiff/$tbs_conf/tiff$csx.lib"
-  l_bin="./build/libtiff/$tbs_conf/tiff$csx.dll"
+  l_slib="./_build/libtiff/$tbs_conf/tiff_static$csx.lib"
+  l_dlib="./_build/libtiff/$tbs_conf/tiff$csx.lib"
+  l_bin="./_build/libtiff/$tbs_conf/tiff$csx.dll"
   list="$l_bin $l_slib $l_dlib $l_inc" ;;
 gnu)
   cm_tools="Unix Makefiles"
   c_flags+="-fPIC"
   make="make $target"
-  l_slib="./build/libtiff/libtiff.a"
-  l_dlib="./build/libtiff/libtiff.so.4.0.3"
+  l_slib="./_build/libtiff/libtiff.a"
+  l_dlib="./_build/libtiff/libtiff.so.4.0.3"
   l_bin="$l_dlib"
   list="$l_slib $l_dlib $l_inc" ;;
 mingw)
@@ -202,9 +202,9 @@ mingw)
   # allow sh in path; some old cmake/mingw bug?
   cm_args+=(-DCMAKE_SH=)
   
-  l_slib="./build/libtiff/libtiff.a"
-  l_dlib="./build/libtiff/libtiff.dll.a"
-  l_bin="./build/libtiff/libtiff.dll"
+  l_slib="./_build/libtiff/libtiff.a"
+  l_dlib="./_build/libtiff/libtiff.dll.a"
+  l_bin="./_build/libtiff/libtiff.dll"
   list="$l_bin $l_slib $l_dlib $l_inc" ;;
 
 *) echo "Tool config not found for $tbs_tools"
@@ -240,8 +240,8 @@ make)
   process_deps
   postproc_deps
   
-  mkdir build
-  cd build
+  mkdir _build
+  cd _build
   
   fsx=
   [ $tbs_tools = gnu ] || fsx=_$(upper $tbs_conf)
@@ -255,14 +255,14 @@ make)
   cd .. ;;
   
 check)
-  cd build
+  cd _build
   ctest -C $tbs_conf . || exit 1
   cd .. ;;
   
 clean)
   rm -rf deps
-  rm -rf build_deps
-  rm -rf build ;;
+  rm -rf _build_deps
+  rm -rf _build ;;
 
 list) echo $list ;;
 list_bin) echo $l_bin ;;
