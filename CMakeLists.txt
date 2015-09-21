@@ -42,6 +42,8 @@ if (POLICY CMP0054)
   cmake_policy(SET CMP0054 NEW)
 endif(POLICY CMP0054)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 # Read version information from configure.ac.
 FILE(READ "${CMAKE_CURRENT_SOURCE_DIR}/configure.ac" configure)
 STRING(REGEX REPLACE ";" "\\\\;" configure "${configure}")

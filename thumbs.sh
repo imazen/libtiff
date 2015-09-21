@@ -189,7 +189,7 @@ msvc12)
   list="$l_bin $l_slib $l_dlib $l_inc" ;;
 gnu)
   cm_tools="Unix Makefiles"
-  c_flags+=" -fPIC"
+  c_flags+="-fPIC"
   make="make $target"
   l_slib="./build/libtiff/libtiff.a"
   l_dlib="./build/libtiff/libtiff.so.4.0.3"
@@ -233,9 +233,6 @@ then
   [ $tbs_tools = mingw ] && cm_args+=(-DCMAKE_SHARED_LINKER_FLAGS="-static")
 fi
 
-[ $tbs_tools = gnu ] && cm_args+=(-DCMAKE_SHARED_LINKER_FLAGS="-lc -lm")
-
-
 # -----------
 
 case "$1" in
@@ -251,7 +248,7 @@ make)
   
   cm_args+=(-DCMAKE_C_FLAGS$fsx="$c_flags")
   cm_args+=(-DCMAKE_CXX_FLAGS$fsx="$c_flags")
-  echo "$cm_tools" "${cm_args[@]}"
+  echo Running: cmake -G "$cm_tools" "${cm_args[@]}"
   cmake -G "$cm_tools" "${cm_args[@]}" .. || exit 1
   $make || exit 1
   
