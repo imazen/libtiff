@@ -114,10 +114,11 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
                     ${CMAKE_CURRENT_BINARY_DIR}
                     ${TIFF_INCLUDES})
 
-add_library(tiff ${tiff_SOURCES} ${tiff_HEADERS} ${nodist_tiff_HEADERS}
-            ${tiff_port_SOURCES} libtiff.def)
+add_library(tiff SHARED ${tiff_SOURCES} ${tiff_HEADERS} ${nodist_tiff_HEADERS}
+  ${tiff_port_SOURCES} libtiff.def)
 target_link_libraries(tiff ${TIFF_LIBRARY_DEPS})
 set_target_properties(tiff PROPERTIES SOVERSION ${SO_COMPATVERSION})
+
 if(NOT CYGWIN)
     # This property causes shared libraries on Linux to have the full version
     # encoded into their final filename.  We disable this on Cygwin because
@@ -136,7 +137,17 @@ install(TARGETS tiff
         ARCHIVE DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR})
 
 install(FILES ${tiff_HEADERS} ${nodist_tiff_HEADERS}
-        DESTINATION "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
+  DESTINATION "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
+
+add_library(tiff_static STATIC ${tiff_SOURCES})
+target_link_libraries(tiff_static ${TIFF_LIBRARY_DEPS})
+if (NOT MSVC)
+  set_target_properties(tiff_static PROPERTIES OUTPUT_NAME tiff)
+endif()
+install(TARGETS tiff_static
+  RUNTIME DESTINATION ${CMAKE_INSTALL_FULL_BINDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR})
 
 if(cxx)
   add_library(tiffxx ${tiffxx_SOURCES} ${tiffxx_HEADERS})
