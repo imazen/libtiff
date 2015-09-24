@@ -82,7 +82,9 @@ build_script:
   
   - thumbs make
   - for /f "tokens=*" %%i in ('thumbs list') do set files=%%i
+  - echo %files%
   - 7z a %zip% %files%
+  - echo "Finished zipping"
   - appveyor PushArtifact %zip%
   
   - ps: if(Test-Path $env:zip) {
