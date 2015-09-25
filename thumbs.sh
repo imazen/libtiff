@@ -158,7 +158,7 @@ upper()
 
 # Local settings
 
-l_inc="./_build/headers/tif_config.h ./_build/headers/tiffconf.h ./libtiff/tiffio.h ./libtiff/tiffvers.h ./libtiff/tiff.h ./libtiff/tiffiop.h ./libtiff/tif_dir.h"
+l_inc="./_build/libtiff/tif_config.h ./_build/libtiff/tiffconf.h ./libtiff/tiffio.h ./libtiff/tiffvers.h ./libtiff/tiff.h ./libtiff/tiffiop.h ./libtiff/tif_dir.h"
 l_slib=
 l_dlib=
 l_bin=
