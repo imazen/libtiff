@@ -168,6 +168,7 @@ make=
 c_flags=
 cm_tools=
 cm_args=(-DCMAKE_BUILD_TYPE=$tbs_conf)
+cm_args+=(-Dlzma=OFF)
 
 target=
 [ $2 ] && target=$2
