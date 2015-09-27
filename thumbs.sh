@@ -54,8 +54,8 @@ deps=()
 targ=()
 post=()
 
-[ "$tbsd_zlib_repo" ]          || export tbsd_zlib_repo="git clone https://github.com/imazen/zlib_shallow ; cd zlib_shallow && git reset --hard b041a7f485778d7f5a49ecb48b591325caa9ae81"
-[ "$tbsd_libjpeg_turbo_repo" ] || export tbsd_libjpeg_turbo_repo="git clone https://github.com/imazen/libjpeg-turbo libjpeg_turbo ; cd libjpeg_turbo && git reset --hard 2bb3c77c6963dae603ed86a9a32f4ab5fbed2e9e"
+[ "$tbsd_zlib_repo" ]          || export tbsd_zlib_repo="git clone https://github.com/imazen/zlib_shallow ; cd zlib_shallow && git reset --hard 638262adec2b52e907e5703e4322a7f866896a13"
+[ "$tbsd_libjpeg_turbo_repo" ] || export tbsd_libjpeg_turbo_repo="git clone https://github.com/imazen/libjpegturbo libjpeg_turbo ; cd libjpeg_turbo && git reset --hard 7f7ac7c2562afbecfd080448137543da9fc657f1"
 
 if [[ "$OSTYPE" == "darwin"* ]]; then cp="rsync"
 else cp="cp"
