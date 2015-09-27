@@ -64,7 +64,7 @@ fi
 deps+=(zlib); targ+=(zlibstatic)
 post+=("$cp -u \$(./thumbs.sh list_slib) ../../deps/$zname")
 
-deps+=(libjpeg_turbo); targ+=(jpeg_static)
+deps+=(libjpeg_turbo); targ+=(jpeg-static)
 post+=("for lib in \$(./thumbs.sh list_slib); do [ -f \$lib ] && $cp -u \$lib ../../deps/$jname; done")
 
 # -----------
