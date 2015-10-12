@@ -10,9 +10,9 @@
 # ./thumbs.sh make
 
 
-# On Win (msvc 2013):
-# C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall x86_amd64
-# SET tbs_tools=msvc12
+# On Win (msvc 2015):
+# C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall x86_amd64
+# SET tbs_tools=msvc14
 # thumbs make
 
 # On Win (mingw32):
@@ -54,8 +54,8 @@ deps=()
 targ=()
 post=()
 
-[ "$tbsd_zlib_repo" ]          || export tbsd_zlib_repo="git clone https://github.com/imazen/zlib_shallow ; cd zlib_shallow && git reset --hard 638262adec2b52e907e5703e4322a7f866896a13"
-[ "$tbsd_libjpeg_turbo_repo" ] || export tbsd_libjpeg_turbo_repo="git clone https://github.com/imazen/libjpegturbo libjpeg_turbo ; cd libjpeg_turbo && git reset --hard 7f7ac7c2562afbecfd080448137543da9fc657f1"
+[ "$tbsd_zlib_repo" ]          || export tbsd_zlib_repo="git clone https://github.com/imazen/zlib_shallow ; cd zlib_shallow && git reset --hard b4d48d0d43f14c018bebc32131cb705ee108ae85"
+[ "$tbsd_libjpeg_turbo_repo" ] || export tbsd_libjpeg_turbo_repo="git clone https://github.com/imazen/libjpegturbo libjpeg_turbo ; cd libjpeg_turbo && git reset --hard 2ade31732a9f6eaf113beb48aba55aed1779557a"
 
 if [[ "$OSTYPE" == "darwin"* ]]; then cp="rsync"
 else cp="cp"
@@ -176,12 +176,12 @@ target=
 # -----------
 
 case "$tbs_tools" in
-msvc12)
+msvc14)
   # d suffix for debug builds
   csx=
   [ "$tbs_conf" = "Debug" ] && csx=d
   
-  cm_tools="Visual Studio 12"
+  cm_tools="Visual Studio 14"
   [ "$target" = "" ] && mstrg="TIFF.sln" || mstrg="$target.vcxproj"
   make="msbuild.exe $mstrg //p:Configuration=$tbs_conf //v:m"
   l_slib="./_build/libtiff/$tbs_conf/tiff_static$csx.lib"
@@ -216,7 +216,7 @@ esac
 
 case "$tbs_arch" in
 x64)
-  [ $tbs_tools = msvc12 ] && cm_tools="$cm_tools Win64"
+  [ $tbs_tools = msvc14 ] && cm_tools="$cm_tools Win64"
   [ $tbs_tools = gnu -o $tbs_tools = mingw ] && c_flags+=" -m64" ;;
 x86)
   [ $tbs_tools = gnu -o $tbs_tools = mingw ] && c_flags+=" -m32" ;;
@@ -229,7 +229,7 @@ esac
 
 if [ $tbs_static_runtime -gt 0 ]
 then
-  [ $tbs_tools = msvc12 ] && c_flags+=" /MT"
+  [ $tbs_tools = msvc14 ] && c_flags+=" /MT"
   [ $tbs_tools = gnu ] && cm_args+=(-DCMAKE_SHARED_LINKER_FLAGS="-static-libgcc -static-libstdc++")
   [ $tbs_tools = mingw ] && cm_args+=(-DCMAKE_SHARED_LINKER_FLAGS="-static")
 fi
