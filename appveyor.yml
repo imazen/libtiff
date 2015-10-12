@@ -91,12 +91,12 @@ build_script:
 
 
 
-test_script:
-  - SET fail=0
-  - thumbs check || SET fail=1 & ver > nul
-  - ps: Push-Ctest-Results '_build'
-  - ps: Push-AppveyorArtifact _build\Testing\Temporary\LastTest.log
-  - exit %fail%
+#test_script:
+#  - SET fail=0
+ # - thumbs check || SET fail=1 & ver > nul
+ # - ps: Push-Ctest-Results '_build'
+ # - ps: Push-AppveyorArtifact _build\Testing\Temporary\LastTest.log
+ # - exit %fail%
 
 on_success:
   - ps: Push-AppveyorArtifact "$nupkg_b*.nupkg"
