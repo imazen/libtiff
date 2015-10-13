@@ -96,8 +96,9 @@ typedef void* tdata_t;          /* image data ref */
 
 #if defined(USE_WIN32_FILEIO)
 # define VC_EXTRALEAN
-# include <windows.h>
 # ifdef __WIN32__
+#define DECLARE_HANDLE(name) struct name##__{int unused;}; typedef struct name##__ *name
+
 DECLARE_HANDLE(thandle_t);     /* Win32 file handle */
 # else
 typedef HFILE thandle_t;       /* client data handle */
