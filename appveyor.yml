@@ -43,7 +43,7 @@ install:
   - nuget install zlib-%tbs_tools%-%tbs_arch%-master -Version 1.2.8.4 -Source https://ci.appveyor.com/nuget/zlib-shallow-x0n34b3pfq1b
   - ps: move zlib*\* deps -force
   - if [%tbs_tools%]==[mingw] move deps\libzlibstatic.a deps\libz.a
-  - if [%tbs_tools%]==[msvc12] move deps\zlibstatic.lib deps\zlib.lib
+  - if [%tbs_tools%]==[msvc14] move deps\zlibstatic.lib deps\zlib.lib
   - SET tbsd_zlib_built=1
   - SET tbsd_zlib_incdir=deps
   - SET tbsd_zlib_libdir=deps
@@ -51,7 +51,7 @@ install:
   - nuget install libjpeg-%tbs_tools%-%tbs_arch%-master -Version 1.4.80.21 -Source https://ci.appveyor.com/nuget/libjpegturbo-o6k4js4y7pjw
   - ps: move libjpeg*\* deps -force
   - if [%tbs_tools%]==[mingw] del deps\libjpeg.dll.a
-  - if [%tbs_tools%]==[msvc12] move deps\jpeg_static.lib deps\jpeg.lib
+  - if [%tbs_tools%]==[msvc14] move deps\jpeg-static.lib deps\jpeg.lib
   - SET tbsd_libjpeg_turbo_built=1
   - SET tbsd_libjpeg_turbo_incdir=deps
   - SET tbsd_libjpeg_turbo_libdir=deps
@@ -91,12 +91,12 @@ build_script:
 
 
 
-#test_script:
-#  - SET fail=0
- # - thumbs check || SET fail=1 & ver > nul
- # - ps: Push-Ctest-Results '_build'
- # - ps: Push-AppveyorArtifact _build\Testing\Temporary\LastTest.log
- # - exit %fail%
+test_script:
+  - SET fail=0
+  - thumbs check || SET fail=1 & ver > nul
+  - ps: Push-Ctest-Results '_build'
+  - ps: Push-AppveyorArtifact _build\Testing\Temporary\LastTest.log
+  - exit %fail%
 
 on_success:
   - ps: Push-AppveyorArtifact "$nupkg_b*.nupkg"
