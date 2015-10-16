@@ -48,7 +48,7 @@ install:
   - SET tbsd_zlib_incdir=deps
   - SET tbsd_zlib_libdir=deps
   
-  - nuget install libjpeg-%tbs_tools%-%tbs_arch%-master -Version 1.4.80.21 -Source https://ci.appveyor.com/nuget/libjpegturbo-o6k4js4y7pjw
+  - nuget install libjpeg-%tbs_tools%-%tbs_arch%-master -Version 1.4.42.21 -Source https://ci.appveyor.com/nuget/libjpegturbo-o6k4js4y7pjw
   - ps: move libjpeg*\* deps -force
   - if [%tbs_tools%]==[mingw] del deps\libjpeg.dll.a
   - if [%tbs_tools%]==[msvc12] move deps\jpeg-static.lib deps\jpeg.lib
