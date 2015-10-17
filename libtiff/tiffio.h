@@ -99,6 +99,13 @@ typedef void* tdata_t;          /* image data ref */
 # ifdef __WIN32__
 #define DECLARE_HANDLE(name) struct name##__{int unused;}; typedef struct name##__ *name
 
+
+
+/* is this header read by freeimage build, if it is it should fail on line 109 */
+
+
+
+
 DECLARE_HANDLE(thandle_t);     /* Win32 file handle */
 # else
 typedef HFILE thandle_t;       /* client data handle */
